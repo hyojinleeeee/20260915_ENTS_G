@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>할일관리 앱</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>📝 할일관리 앱</h1>
+
+    <div class="summary">
+      전체 {{ total }}개 · 완료 {{ done_count }}개 · 남은 할일 {{ total - done_count }}개
+    </div>
+
+    <form class="add-form" action="{{ url_for('add') }}" method="post">
+      <input type="text" name="title" placeholder="할 일을 입력하세요" autofocus required>
+      <button type="submit">추가</button>
+    </form>
+
+    <ul class="todo-list">
+      {% for todo in todos %}
+      <li class="todo-item {{ 'done' if todo['done'] else '' }}">
+        <form class="toggle-form" action="{{ url_for('toggle', todo_id=todo['id']) }}" method="post">
+          <button type="submit" class="check-btn" title="완료 토글">
+            {{ '✅' if todo['done'] else '⬜' }}
+          </button>
+        </form>
+
+        <span class="title-text">{{ todo['title'] }}</span>
+        <span class="created-at">{{ todo['created_at'] }}</span>
+
+        <form class="edit-form" action="{{ url_for('edit', todo_id=todo['id']) }}" method="post">
+          <input type="text" name="title" value="{{ todo['title'] }}" class="edit-input">
+          <button type="submit" class="edit-btn">수정</button>
+        </form>
+
+        <form class="delete-form" action="{{ url_for('delete', todo_id=todo['id']) }}" method="post">
+          <button type="submit" class="delete-btn" onclick="return confirm('삭제하시겠습니까?')">삭제</button>
+        </form>
+      </li>
+      {% else %}
+      <li class="empty">등록된 할일이 없습니다. 위에서 새 할일을 추가해보세요!</li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>
