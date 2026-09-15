@@ -1,12 +1,16 @@
+import os
 import sqlite3
 from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, url_for
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "todos.db"
+# Vercel의 서버리스 함수는 프로젝트 디렉터리가 읽기 전용이라 /tmp에만 쓸 수 있다.
+# /tmp는 인스턴스마다 초기화될 수 있으므로 Vercel 환경에서는 데이터가 영구 보존되지 않는다.
+DB_PATH = Path("/tmp/todos.db") if os.environ.get("VERCEL") else BASE_DIR / "todos.db"
 
 app = Flask(__name__)
+_db_initialized = False
 
 
 def get_db():
@@ -29,6 +33,14 @@ def init_db():
     )
     conn.commit()
     conn.close()
+
+
+@app.before_request
+def ensure_db():
+    global _db_initialized
+    if not _db_initialized:
+        init_db()
+        _db_initialized = True
 
 
 @app.route("/")
