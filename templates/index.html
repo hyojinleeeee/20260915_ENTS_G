@@ -8,7 +8,13 @@
 </head>
 <body>
   <div class="container">
-    <h1>📝 할일관리 앱</h1>
+    <div class="topbar">
+      <h1>📝 할일관리 앱</h1>
+      <form class="logout-form" action="{{ url_for('logout') }}" method="post">
+        <span class="whoami">{{ username }}님</span>
+        <button type="submit" class="logout-btn">로그아웃</button>
+      </form>
+    </div>
 
     <div class="summary">
       전체 {{ total }}개 · 완료 {{ done_count }}개 · 남은 할일 {{ total - done_count }}개
